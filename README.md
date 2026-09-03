@@ -1,23 +1,29 @@
-# Developer Collaboration Hub (DevCollab)
+# DevCollab — Developer Collaboration Hub
 
-A production-quality MERN stack SaaS-style web application where developers discover projects, apply to collaborate, manage teams, chat in real-time, and maintain rich professional profiles.
+A production-quality MERN stack SaaS-style application for developers to discover projects, apply to collaborate, manage teams, chat in real time, and maintain rich professional profiles.
+
+## Overview
+
+DevCollab connects developers with projects that match their skills. Users build a profile, get matched to relevant projects in a personalized feed, apply to join teams, and collaborate through live chat once accepted — all backed by a full application-tracking and notification system.
 
 ## Features
 
-- **Feed** — Skill-matched project discovery (default landing page after login)
-- **Dashboard** — My projects, application stats, incoming applications
-- **Projects** — Browse, search, and filter all projects
-- **Project Detail** — Full info, team members, apply/manage applications
-- **Applications** — Track pending, accepted, and rejected applications
-- **Profile** — Editable professional profile with GitHub API integration
-- **Chat** — Real-time project-based group chat via Socket.io
-- **Notifications** — Application status updates
-- **Bookmarks** — Save projects from the feed
+| Feature | Description |
+|---|---|
+| **Feed** | Skill-matched project discovery — the default landing page after login |
+| **Dashboard** | Overview of your projects, application stats, and incoming applications |
+| **Projects** | Browse, search, and filter all available projects |
+| **Project Detail** | Full project info, team member list, and apply/manage-applications actions |
+| **Applications** | Track applications by status — pending, accepted, rejected |
+| **Profile** | Editable professional profile with GitHub API integration |
+| **Chat** | Real-time, project-based group chat via Socket.io |
+| **Notifications** | Live updates on application status changes |
+| **Bookmarks** | Save interesting projects from the feed for later |
 
 ## Tech Stack
 
 | Layer | Technology |
-|-------|-----------|
+|---|---|
 | Frontend | React, Tailwind CSS, React Router, Axios, Socket.io Client |
 | Backend | Node.js, Express.js (MVC architecture) |
 | Database | MongoDB with Mongoose |
@@ -53,11 +59,11 @@ developer-collaboration-hub/
 ## Prerequisites
 
 - Node.js 18+
-- MongoDB (local or Atlas)
+- MongoDB (local instance or Atlas)
 
-## Setup
+## Getting Started
 
-### 1. Clone and install dependencies
+### 1. Clone the repository and install dependencies
 
 ```bash
 cd developer-collaboration-hub
@@ -76,7 +82,7 @@ cp .env.example .env
 
 ### 2. Configure environment variables
 
-**Backend (`backend/.env`):**
+**`backend/.env`**
 
 ```env
 PORT=5000
@@ -87,7 +93,7 @@ CLIENT_URL=http://localhost:5173
 GITHUB_TOKEN=          # Optional: increases GitHub API rate limits
 ```
 
-**Frontend (`frontend/.env`):**
+**`frontend/.env`**
 
 ```env
 VITE_API_URL=http://localhost:5000/api
@@ -96,9 +102,9 @@ VITE_SOCKET_URL=http://localhost:5000
 
 ### 3. Start MongoDB
 
-Ensure MongoDB is running locally, or use a MongoDB Atlas connection string in `MONGODB_URI`.
+Make sure MongoDB is running locally, or point `MONGODB_URI` at a MongoDB Atlas connection string.
 
-### 4. Run the application
+### 4. Run the app
 
 ```bash
 # Terminal 1 — Backend
@@ -110,15 +116,15 @@ cd frontend
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser.
+Then open **[http://localhost:5173](http://localhost:5173)** in your browser.
 
 ## Application Flow
 
 1. Register or log in
-2. Land on **Feed** (not Dashboard)
-3. Browse skill-matched projects and apply
-4. Manage projects and applications from **Dashboard**
-5. Chat with team members on accepted projects
+2. Land on the **Feed** (not the Dashboard)
+3. Browse skill-matched projects and apply to the ones you like
+4. Manage your projects and incoming applications from the **Dashboard**
+5. Chat with your team once you're accepted onto a project
 
 ## Matching Algorithm
 
@@ -126,20 +132,20 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 match % = (matched skills / total required skills) × 100
 ```
 
-Endpoint: `GET /api/projects/match`
+**Endpoint:** `GET /api/projects/match`
 
 ## API Documentation
 
-See [docs/API.md](docs/API.md) for the full REST API reference.
+Full REST API reference: [`docs/API.md`](docs/API.md)
 
-## Scripts
+## NPM Scripts
 
 | Command | Location | Description |
-|---------|----------|-------------|
-| `npm run dev` | backend | Start API with file watching |
-| `npm start` | backend | Start API (production) |
-| `npm run dev` | frontend | Start Vite dev server |
-| `npm run build` | frontend | Production build |
+|---|---|---|
+| `npm run dev` | `backend/` | Start the API with file watching (hot reload) |
+| `npm start` | `backend/` | Start the API in production mode |
+| `npm run dev` | `frontend/` | Start the Vite dev server |
+| `npm run build` | `frontend/` | Create a production build |
 
 ## License
 
