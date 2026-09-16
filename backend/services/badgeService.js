@@ -10,7 +10,7 @@ export const BADGE_DEFINITIONS = [
   {
     id: 'first_project',
     title: 'First Project',
-    description: 'Created your first project',
+    description: 'Created and completed your first project.',
     icon: '🚀',
     check: async (userId) => {
       const count = await Project.countDocuments({ createdBy: userId });
@@ -20,7 +20,7 @@ export const BADGE_DEFINITIONS = [
   {
     id: 'team_player',
     title: 'Team Player',
-    description: 'Joined 3 or more projects as a contributor',
+    description: 'Successfully collaborated with other developers on a project.',
     icon: '🤝',
     check: async (userId) => {
       const count = await Project.countDocuments({ members: userId, createdBy: { $ne: userId } });
@@ -30,7 +30,7 @@ export const BADGE_DEFINITIONS = [
   {
     id: 'team_leader',
     title: 'Team Leader',
-    description: 'Led a team of 3 or more members',
+    description: 'Successfully led a team or project.',
     icon: '⭐',
     check: async (userId) => {
       const projects = await Project.find({ createdBy: userId });
@@ -38,9 +38,23 @@ export const BADGE_DEFINITIONS = [
     },
   },
   {
+    id: 'bug_hunter',
+    title: 'Bug Hunter',
+    description: 'Found and resolved bugs in projects.',
+    icon: '🐛',
+    check: async (userId) => {
+      // Awarded when a user has contributed to at least 2 completed projects
+      const count = await Project.countDocuments({
+        members: userId,
+        status: 'completed',
+      });
+      return count >= 2;
+    },
+  },
+  {
     id: 'active_member',
     title: 'Active Member',
-    description: 'Applied to 5 or more projects',
+    description: 'Consistently active and engaged on the platform.',
     icon: '🔥',
     check: async (userId) => {
       const count = await Application.countDocuments({ userId });
@@ -50,7 +64,7 @@ export const BADGE_DEFINITIONS = [
   {
     id: 'open_source',
     title: 'Open Source Contributor',
-    description: 'Successfully joined an open-source project',
+    description: 'Contributed to an open-source project.',
     icon: '💻',
     check: async (userId) => {
       const accepted = await Application.countDocuments({ userId, status: 'accepted' });
@@ -60,7 +74,7 @@ export const BADGE_DEFINITIONS = [
   {
     id: 'full_stack',
     title: 'Full Stack Developer',
-    description: 'Has skills in both frontend and backend technologies',
+    description: 'Demonstrated experience across frontend and backend development.',
     icon: '⚡',
     check: async (userId, user) => {
       if (!user) return false;
@@ -75,7 +89,7 @@ export const BADGE_DEFINITIONS = [
   {
     id: 'ui_expert',
     title: 'UI Expert',
-    description: 'Specialises in frontend and design technologies',
+    description: 'Demonstrated strong UI/UX and frontend development skills.',
     icon: '🎨',
     check: async (userId, user) => {
       if (!user) return false;

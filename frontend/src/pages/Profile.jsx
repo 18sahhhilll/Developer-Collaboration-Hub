@@ -19,6 +19,7 @@ import SkillTags from '../components/SkillTags';
 import SkillAutocomplete from '../components/SkillAutocomplete';
 import StatusBadge from '../components/StatusBadge';
 import LoadingSpinner from '../components/LoadingSpinner';
+import ProfileBadges from '../components/ProfileBadges';
 
 const PROJECT_TABS = [
   { id: 'all', label: 'All' },
@@ -285,6 +286,9 @@ const Profile = () => {
               </div>
             </div>
           )}
+
+          {/* BADGES */}
+          <ProfileBadges userId={profileId} isOwnProfile={isOwnProfile} />
 
           {/* PROJECTS */}
           <div className="card">
