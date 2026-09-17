@@ -20,7 +20,7 @@ import { initSocket } from './socket/socketHandler.js';
 import { setSocketIO } from './utils/notificationHelper.js';
 import { ensureTextIndex } from './services/searchService.js';
 import { migrateUsernames } from './scripts/migrateUsernames.js';
-import { autoSeedIfEmpty } from './scripts/seedDatabase.js';
+import { autoSeedIfEmpty, seedDatabase } from './scripts/seedDatabase.js';
 
 dotenv.config();
 
@@ -107,9 +107,21 @@ app.use(express.json({ limit: '10kb' })); // Limit body size
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(mongoSanitize()); // Prevent NoSQL injection
 
-// ── Health check ──────────────────────────────────────────────────────────────
+// ── Health check & Seed endpoint ──────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Developer Collaboration Hub API' });
+});
+
+app.get('/api/seed', async (req, res) => {
+  try {
+    await seedDatabase(true);
+    res.json({
+      success: true,
+      message: 'Successfully seeded 12 Indian developer profiles, 10 projects, applications, badges, and chat messages into MongoDB!',
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
 // ── Routes ────────────────────────────────────────────────────────────────────
