@@ -7,6 +7,9 @@ export const LEGACY_STATUS_MAP = {
 
 export const normalizeStatus = (status) => LEGACY_STATUS_MAP[status] || status;
 
-export const isRecruiting = (status) => normalizeStatus(status) === 'recruiting';
+export const isRecruiting = (status) => {
+  const norm = normalizeStatus(status);
+  return norm === 'recruiting' || norm === 'in-progress' || norm === 'open';
+};
 
 export default { PROJECT_STATUSES, LEGACY_STATUS_MAP, normalizeStatus, isRecruiting };

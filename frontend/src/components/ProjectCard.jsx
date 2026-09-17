@@ -110,10 +110,24 @@ const ProjectCard = ({
               <button
                 type="button"
                 onClick={() => onApply?.(project._id)}
-                disabled={applying || applied || project.status === 'completed' || project.status === 'archived'}
-                className="btn-accent !py-2 !text-xs"
+                disabled={
+                  applying ||
+                  applied ||
+                  memberCount >= project.teamSize ||
+                  project.status === 'completed' ||
+                  project.status === 'archived'
+                }
+                className="btn-accent !py-2 !text-xs disabled:opacity-50"
               >
-                {applied ? 'Applied' : applying ? 'Applying...' : 'Apply'}
+                {applied
+                  ? 'Applied'
+                  : memberCount >= project.teamSize
+                  ? 'Team Full'
+                  : project.status === 'completed' || project.status === 'archived'
+                  ? 'Closed'
+                  : applying
+                  ? 'Applying...'
+                  : 'Apply'}
               </button>
             )
           )}
