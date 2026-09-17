@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Users, Bookmark, BookmarkCheck, Sparkles } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import SkillTags from './SkillTags';
 import StatusBadge from './StatusBadge';
 
@@ -19,6 +20,7 @@ const ProjectCard = ({
   project,
   showApply = true,
   onApply,
+  onWithdraw,
   applying = false,
   applied = false,
   isOwner = false,
@@ -27,6 +29,12 @@ const ProjectCard = ({
   onBookmark,
   recommendationReason,
 }) => {
+  const { user } = useAuth();
+  const ownerId = String(project.createdBy?._id || project.createdBy || '');
+  const currentUserId = String(user?._id || '');
+  const isProjectOwner = isOwner || (ownerId && currentUserId && ownerId === currentUserId);
+  const isMember = project.members?.some((m) => String(m._id || m) === currentUserId);
+
   const memberCount = project.members?.length || 0;
   const skills = project.requiredSkills?.length
     ? project.requiredSkills
@@ -101,35 +109,46 @@ const ProjectCard = ({
           <Link to={`/projects/${project._id}`} className="btn-secondary !py-2 !text-xs">
             View
           </Link>
-          {isOwner ? (
+          {isProjectOwner ? (
             <Link to={`/projects/${project._id}/edit`} className="btn-primary !py-2 !text-xs">
               Manage Project
             </Link>
+          ) : isMember ? (
+            <span className="rounded-lg bg-chrome px-3 py-2 text-xs font-medium text-muted">
+              Member
+            </span>
           ) : (
-            showApply && (
-              <button
-                type="button"
-                onClick={() => onApply?.(project._id)}
-                disabled={
-                  applying ||
-                  applied ||
-                  memberCount >= project.teamSize ||
-                  project.status === 'completed' ||
-                  project.status === 'archived'
-                }
-                className="btn-accent !py-2 !text-xs disabled:opacity-50"
-              >
-                {applied
-                  ? 'Applied'
-                  : memberCount >= project.teamSize
-                  ? 'Team Full'
-                  : project.status === 'completed' || project.status === 'archived'
-                  ? 'Closed'
-                  : applying
-                  ? 'Applying...'
-                  : 'Apply'}
-              </button>
-            )
+            showApply &&
+              (applied ? (
+                <button
+                  type="button"
+                  onClick={() => onWithdraw?.(project._id)}
+                  className="rounded-lg border border-border bg-chrome px-3 py-1.5 text-xs font-medium text-muted transition hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+                  title="Click to withdraw application"
+                >
+                  Applied ✕
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => onApply?.(project._id)}
+                  disabled={
+                    applying ||
+                    memberCount >= project.teamSize ||
+                    project.status === 'completed' ||
+                    project.status === 'archived'
+                  }
+                  className="btn-accent !py-2 !text-xs disabled:opacity-50"
+                >
+                  {memberCount >= project.teamSize
+                    ? 'Team Full'
+                    : project.status === 'completed' || project.status === 'archived'
+                    ? 'Closed'
+                    : applying
+                    ? 'Applying...'
+                    : 'Apply'}
+                </button>
+              ))
           )}
         </div>
       </div>

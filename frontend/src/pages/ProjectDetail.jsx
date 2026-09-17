@@ -59,6 +59,15 @@ const ProjectDetail = () => {
     fetchData();
   }, [id, navigate, user?._id]);
 
+  const handleWithdraw = async () => {
+    try {
+      await api.delete(`/applications/${id}`);
+      setApplied(false);
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to withdraw application');
+    }
+  };
+
   const handleApply = async () => {
     setApplying(true);
     try {
@@ -272,7 +281,18 @@ const ProjectDetail = () => {
                   </button>
                 )}
                 {applied && !isMember && (
-                  <p className="text-center text-sm text-muted">Application submitted</p>
+                  <div className="space-y-2 text-center">
+                    <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">
+                      ✓ Application submitted
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleWithdraw}
+                      className="text-xs text-muted underline transition hover:text-red-600"
+                    >
+                      Withdraw Application
+                    </button>
+                  </div>
                 )}
                 {isMember && (
                   <Link to={`/chat/${id}`} className="btn-primary w-full">

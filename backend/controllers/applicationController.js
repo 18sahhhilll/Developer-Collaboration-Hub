@@ -199,3 +199,21 @@ export const getDashboardApplications = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const withdrawApplication = async (req, res) => {
+  try {
+    const { projectId } = req.params;
+    const application = await Application.findOneAndDelete({
+      userId: req.user._id,
+      projectId,
+    });
+
+    if (!application) {
+      return res.status(404).json({ message: 'No active application found to withdraw' });
+    }
+
+    res.json({ message: 'Application withdrawn successfully', projectId });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

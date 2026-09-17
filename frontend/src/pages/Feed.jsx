@@ -103,6 +103,19 @@ const Feed = () => {
     }
   };
 
+  const handleWithdraw = async (projectId) => {
+    try {
+      await api.delete(`/applications/${projectId}`);
+      setAppliedIds((prev) => {
+        const next = new Set(prev);
+        next.delete(String(projectId));
+        return next;
+      });
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to withdraw application');
+    }
+  };
+
   return (
     <div className="page-container">
       <div className="mb-6">
@@ -165,6 +178,7 @@ const Feed = () => {
               key={project._id}
               project={project}
               onApply={(id) => setApplyModal(id)}
+              onWithdraw={handleWithdraw}
               applying={applying === project._id}
               applied={appliedIds.has(String(project._id))}
               isOwner={ownedIds.has(String(project._id))}
