@@ -56,14 +56,13 @@ export const applyToProject = async (req, res) => {
           relatedId: existing._id,
           projectId: project._id,
         });
-
-        const populated = await Application.findById(existing._id)
-          .populate('userId', 'name email role skills')
-          .populate('projectId', 'title');
-
-        return res.status(200).json(populated);
       }
-      return res.status(400).json({ message: 'You have already applied to this project' });
+
+      const populated = await Application.findById(existing._id)
+        .populate('userId', 'name email role skills')
+        .populate('projectId', 'title');
+
+      return res.status(200).json(populated);
     }
 
     const application = await Application.create({
@@ -88,7 +87,11 @@ export const applyToProject = async (req, res) => {
     res.status(201).json(populated);
   } catch (error) {
     if (error.code === 11000) {
-      return res.status(400).json({ message: 'You have already applied to this project' });
+      const existing = await Application.findOne({ userId: req.user._id, projectId: req.params.projectId });
+      if (existing) {
+        return res.status(200).json(existing);
+      }
+      return res.status(200).json({ message: 'Application already exists' });
     }
     res.status(500).json({ message: error.message });
   }

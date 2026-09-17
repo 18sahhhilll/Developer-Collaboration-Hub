@@ -138,6 +138,8 @@ app.use(notFound);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
+server.keepAliveTimeout = 65000;
+server.headersTimeout = 66000;
 server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
