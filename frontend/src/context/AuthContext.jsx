@@ -51,9 +51,9 @@ export const AuthProvider = ({ children }) => {
     return userData;
   };
 
-  // Google OAuth
-  const googleLogin = async (credential) => {
-    const { data } = await api.post('/auth/google', { credential });
+  // Google OAuth — accepts { credential } (One Tap) or { access_token } (popup)
+  const googleLogin = async (tokenData) => {
+    const { data } = await api.post('/auth/google', tokenData);
     localStorage.setItem('token', data.token);
     const { data: userData } = await api.get('/auth/me');
     setUser(userData);

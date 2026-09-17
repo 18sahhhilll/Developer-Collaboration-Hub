@@ -1,6 +1,6 @@
 import User from '../models/User.js';
 import generateToken from '../utils/generateToken.js';
-import { verifyGoogleToken } from '../services/googleAuthService.js';
+import { verifyGoogleToken, fetchGoogleUserInfo } from '../services/googleAuthService.js';
 
 const slugify = (str) =>
   str
@@ -36,17 +36,24 @@ const issueAuthResponse = (user) => ({
 
 export const googleAuth = async (req, res) => {
   try {
-    const { credential } = req.body;
+    const { credential, access_token } = req.body;
 
-    if (!credential) {
-      return res.status(400).json({ message: 'Google credential is required' });
+    if (!credential && !access_token) {
+      return res.status(400).json({ message: 'Google credential or access_token is required' });
     }
 
     if (!process.env.GOOGLE_CLIENT_ID) {
       return res.status(503).json({ message: 'Google OAuth is not configured on the server' });
     }
 
-    const payload = await verifyGoogleToken(credential);
+    // Resolve user payload from whichever token type was provided
+    let payload;
+    if (credential) {
+      payload = await verifyGoogleToken(credential);
+    } else {
+      payload = await fetchGoogleUserInfo(access_token);
+    }
+
     const googleId = payload.sub;
     const email = payload.email?.toLowerCase();
     const name = payload.name || email?.split('@')[0] || 'User';

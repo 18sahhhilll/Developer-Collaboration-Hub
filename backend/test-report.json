@@ -1,0 +1,228 @@
+{
+  "timestamp": "2026-09-16T19:43:50.845Z",
+  "summary": {
+    "total": 36,
+    "passed": 32,
+    "failed": 4,
+    "warned": 0,
+    "skipped": 0
+  },
+  "results": [
+    {
+      "category": "Server",
+      "name": "Health check endpoint",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Server",
+      "name": "CORS allows localhost:5173",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Auth",
+      "name": "User registration",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Auth",
+      "name": "User login (email)",
+      "status": "FAIL",
+      "detail": "Please verify your email before logging in. Check your inbox for a verification link."
+    },
+    {
+      "category": "Auth",
+      "name": "User login (username)",
+      "status": "FAIL",
+      "detail": "Please verify your email before logging in. Check your inbox for a verification link."
+    },
+    {
+      "category": "Auth",
+      "name": "Login rejects bad password",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Auth",
+      "name": "GET /auth/me (authenticated)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Auth",
+      "name": "GET /auth/me rejects no token",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Auth",
+      "name": "Rejects duplicate email registration",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Profile",
+      "name": "GET own profile",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Profile",
+      "name": "Update profile (bio, role, skills)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Profile",
+      "name": "Complete onboarding",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Profile",
+      "name": "GET profile stats",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Profile",
+      "name": "GET profile projects",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Profile",
+      "name": "GET public profile by ID",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Profile",
+      "name": "Public profile includes badges array",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Profile",
+      "name": "GET public profile by username",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Badges",
+      "name": "GET user badges (count: 1)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Badges",
+      "name": "Refresh badges (new: 0, total: 1)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Badges",
+      "name": "Badge schema validation (id, title, icon, earnedAt)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Badges",
+      "name": "GET badges rejects unauthenticated",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Projects",
+      "name": "Create project",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Projects",
+      "name": "GET all projects (count: 1)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Projects",
+      "name": "GET project by ID",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Projects",
+      "name": "Update project",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Applications",
+      "name": "GET applications",
+      "status": "FAIL",
+      "detail": "Status: 404"
+    },
+    {
+      "category": "Chat",
+      "name": "GET chats (count: 1)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Notifications",
+      "name": "GET notifications (count: 0)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Skills",
+      "name": "GET skills list",
+      "status": "FAIL",
+      "detail": "Status: 200"
+    },
+    {
+      "category": "Bookmarks",
+      "name": "Toggle bookmark ON",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Bookmarks",
+      "name": "GET bookmarks (count: 1)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Bookmarks",
+      "name": "Toggle bookmark OFF",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Security",
+      "name": "X-Content-Type-Options: nosniff",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Security",
+      "name": "X-Frame-Options header present",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Security",
+      "name": "Rate limiting active (remaining: 66)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Cleanup",
+      "name": "Delete test project",
+      "status": "PASS",
+      "detail": ""
+    }
+  ]
+}

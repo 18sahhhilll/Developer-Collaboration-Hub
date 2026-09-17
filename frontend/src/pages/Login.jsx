@@ -53,7 +53,7 @@ const Login = () => {
     setError('');
     setGoogleLoading(true);
     try {
-      const userData = await googleLogin(response.credential);
+      const userData = await googleLogin(response);
       redirectAfterAuth(userData);
     } catch (err) {
       setError(err.response?.data?.message || 'Google sign-in failed');

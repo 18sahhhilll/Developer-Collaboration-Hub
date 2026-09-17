@@ -70,7 +70,7 @@ const Register = () => {
     setError('');
     setGoogleLoading(true);
     try {
-      const userData = await googleLogin(response.credential);
+      const userData = await googleLogin(response);
       navigate(userData.onboardingCompleted ? '/feed' : '/onboarding');
     } catch (err) {
       setError(err.response?.data?.message || 'Google sign-up failed');

@@ -1,4 +1,5 @@
 import { OAuth2Client } from 'google-auth-library';
+import axios from 'axios';
 
 let googleClient = null;
 
@@ -12,6 +13,10 @@ const getGoogleClient = () => {
   return googleClient;
 };
 
+/**
+ * Verify a Google ID token (credential) — used by the One Tap / renderButton flow.
+ * Returns the JWT payload with sub, email, name, picture.
+ */
 export const verifyGoogleToken = async (idToken) => {
   const client = getGoogleClient();
   const ticket = await client.verifyIdToken({
@@ -21,4 +26,21 @@ export const verifyGoogleToken = async (idToken) => {
   return ticket.getPayload();
 };
 
-export default { verifyGoogleToken };
+/**
+ * Fetch user info using a Google access_token — used by the popup (useGoogleLogin) flow.
+ * Returns the same shape as verifyGoogleToken: { sub, email, name, picture }.
+ */
+export const fetchGoogleUserInfo = async (accessToken) => {
+  const { data } = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  return {
+    sub: data.sub,
+    email: data.email,
+    name: data.name,
+    picture: data.picture,
+    email_verified: data.email_verified,
+  };
+};
+
+export default { verifyGoogleToken, fetchGoogleUserInfo };
