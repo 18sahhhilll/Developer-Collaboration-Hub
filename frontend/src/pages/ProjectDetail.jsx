@@ -62,9 +62,10 @@ const ProjectDetail = () => {
   const handleWithdraw = async () => {
     try {
       await api.delete(`/applications/${id}`);
-      setApplied(false);
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to withdraw application');
+      console.warn('Withdraw warning:', err);
+    } finally {
+      setApplied(false);
     }
   };
 

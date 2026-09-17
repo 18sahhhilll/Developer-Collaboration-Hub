@@ -57,7 +57,10 @@ const Feed = () => {
       setProjects(projectsRes.data);
       setAppliedIds(
         new Set(
-          appsRes.data.map((a) => String(a.projectId?._id || a.projectId || ''))
+          appsRes.data
+            .map((a) => a.projectId?._id || a.projectId)
+            .filter(Boolean)
+            .map(String)
         )
       );
       setBookmarks(new Set(bookmarksRes.data.map((b) => String(b._id || b))));
@@ -113,13 +116,14 @@ const Feed = () => {
   const handleWithdraw = async (projectId) => {
     try {
       await api.delete(`/applications/${projectId}`);
+    } catch (err) {
+      console.warn('Withdraw warning:', err);
+    } finally {
       setAppliedIds((prev) => {
         const next = new Set(prev);
         next.delete(String(projectId));
         return next;
       });
-    } catch (err) {
-      alert(err.response?.data?.message || 'Failed to withdraw application');
     }
   };
 

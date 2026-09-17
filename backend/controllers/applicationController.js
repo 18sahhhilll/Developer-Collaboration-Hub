@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Application from '../models/Application.js';
 import Project from '../models/Project.js';
 import { createNotification, NOTIFICATION_TYPES } from '../utils/notificationHelper.js';
@@ -96,7 +97,9 @@ export const getMyApplications = async (req, res) => {
       .populate('userId', 'name email')
       .sort({ createdAt: -1 });
 
-    res.json(applications);
+    const validApplications = applications.filter((app) => app.projectId != null);
+
+    res.json(validApplications);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -226,16 +229,22 @@ export const getDashboardApplications = async (req, res) => {
 export const withdrawApplication = async (req, res) => {
   try {
     const { projectId } = req.params;
-    const application = await Application.findOneAndDelete({
-      userId: req.user._id,
-      projectId,
-    });
+    const userId = req.user._id;
 
-    if (!application) {
-      return res.status(404).json({ message: 'No active application found to withdraw' });
+    let query;
+    if (mongoose.Types.ObjectId.isValid(projectId)) {
+      query = { userId, $or: [{ projectId }, { _id: projectId }] };
+    } else {
+      query = { userId, projectId };
     }
 
-    res.json({ message: 'Application withdrawn successfully', projectId });
+    const application = await Application.findOneAndDelete(query);
+
+    res.json({
+      message: 'Application withdrawn successfully',
+      projectId,
+      withdrawn: !!application,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
