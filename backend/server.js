@@ -19,6 +19,7 @@ import skillsRoutes from './routes/skillsRoutes.js';
 import { initSocket } from './socket/socketHandler.js';
 import { setSocketIO } from './utils/notificationHelper.js';
 import { ensureTextIndex } from './services/searchService.js';
+import { ensureApplicationIndexes } from './models/Application.js';
 import { migrateUsernames } from './scripts/migrateUsernames.js';
 import { autoSeedIfEmpty, seedDatabase } from './scripts/seedDatabase.js';
 
@@ -27,6 +28,7 @@ dotenv.config();
 // ── Database ───────────────────────────────────────────────────────────────────
 connectDB().then(async () => {
   await ensureTextIndex().catch((err) => console.warn('Index setup:', err.message));
+  await ensureApplicationIndexes().catch((err) => console.warn('Application index setup:', err.message));
   await migrateUsernames(); // Safe to run every startup
   await autoSeedIfEmpty(); // Auto-seed realistic sample data if DB is empty
 });

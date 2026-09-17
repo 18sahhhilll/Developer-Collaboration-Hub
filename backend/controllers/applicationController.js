@@ -87,11 +87,17 @@ export const applyToProject = async (req, res) => {
     res.status(201).json(populated);
   } catch (error) {
     if (error.code === 11000) {
-      const existing = await Application.findOne({ userId: req.user._id, projectId: req.params.projectId });
+      const existing = await Application.findOne({
+        userId: req.user._id,
+        projectId: req.params.projectId,
+      })
+        .populate('userId', 'name email role skills')
+        .populate('projectId', 'title');
+
       if (existing) {
         return res.status(200).json(existing);
       }
-      return res.status(200).json({ message: 'Application already exists' });
+      return res.status(400).json({ message: 'You have already applied to this project' });
     }
     res.status(500).json({ message: error.message });
   }
@@ -119,7 +125,8 @@ export const getProjectApplications = async (req, res) => {
       return res.status(404).json({ message: 'Project not found' });
     }
 
-    if (project.createdBy.toString() !== req.user._id.toString()) {
+    const ownerId = (project.createdBy?._id || project.createdBy).toString();
+    if (ownerId !== req.user._id.toString()) {
       return res.status(403).json({ message: 'Not authorized' });
     }
 
@@ -149,7 +156,8 @@ export const updateApplicationStatus = async (req, res) => {
     }
 
     const project = application.projectId;
-    if (project.createdBy.toString() !== req.user._id.toString()) {
+    const ownerId = (project.createdBy?._id || project.createdBy).toString();
+    if (ownerId !== req.user._id.toString()) {
       return res.status(403).json({ message: 'Not authorized' });
     }
 
@@ -167,7 +175,7 @@ export const updateApplicationStatus = async (req, res) => {
         return res.status(400).json({ message: 'Team is full' });
       }
 
-      if (!project.members.some((m) => m.toString() === application.userId._id.toString())) {
+      if (!project.members.some((m) => (m._id || m).toString() === application.userId._id.toString())) {
         project.members.push(application.userId._id);
         project.memberRoles = project.memberRoles || [];
         project.memberRoles.push({ user: application.userId._id, role: 'member' });
@@ -219,11 +227,12 @@ export const getDashboardApplications = async (req, res) => {
       .populate('projectId', 'title status')
       .sort({ createdAt: -1 });
 
-    const ownedProjectIds = await Project.find({ createdBy: userId }).distinct('_id');
+    const ownedProjects = await Project.find({ createdBy: userId }).select('_id');
+    const ownedProjectIds = ownedProjects.map((p) => p._id);
     const incomingApplications = await Application.find({
       projectId: { $in: ownedProjectIds },
     })
-      .populate('userId', 'name role skills')
+      .populate('userId', 'name role skills email')
       .populate('projectId', 'title')
       .sort({ createdAt: -1 });
 
