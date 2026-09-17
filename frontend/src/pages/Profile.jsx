@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   Github,
   Linkedin,
@@ -12,6 +12,7 @@ import {
   Send,
   CheckCircle,
   Users,
+  LogOut,
 } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -38,9 +39,15 @@ const StatCard = ({ icon: Icon, label, value }) => (
 
 const Profile = () => {
   const { id } = useParams();
-  const { user: currentUser, updateUser } = useAuth();
+  const navigate = useNavigate();
+  const { user: currentUser, updateUser, logout } = useAuth();
   const isOwnProfile = !id || id === currentUser?._id;
   const profileId = isOwnProfile ? currentUser?._id : id;
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   const [profile, setProfile] = useState(null);
   const [stats, setStats] = useState(null);
@@ -188,10 +195,21 @@ const Profile = () => {
                 </div>
               </div>
               {isOwnProfile && !editing && (
-                <button type="button" onClick={() => setEditing(true)} className="btn-secondary !py-2">
-                  <Pencil className="h-4 w-4" />
-                  Edit
-                </button>
+                <div className="flex items-center gap-2">
+                  <button type="button" onClick={() => setEditing(true)} className="btn-secondary !py-2">
+                    <Pencil className="h-4 w-4" />
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="btn-secondary !py-2 text-red-600 transition hover:bg-red-50 hover:text-red-700"
+                    title="Log out of your account"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                  </button>
+                </div>
               )}
             </div>
 
