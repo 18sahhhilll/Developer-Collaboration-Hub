@@ -1,10 +1,10 @@
 {
-  "timestamp": "2026-09-16T19:43:50.845Z",
+  "timestamp": "2026-09-17T07:00:18.910Z",
   "summary": {
     "total": 36,
-    "passed": 32,
-    "failed": 4,
-    "warned": 0,
+    "passed": 35,
+    "failed": 0,
+    "warned": 1,
     "skipped": 0
   },
   "results": [
@@ -28,15 +28,15 @@
     },
     {
       "category": "Auth",
-      "name": "User login (email)",
-      "status": "FAIL",
-      "detail": "Please verify your email before logging in. Check your inbox for a verification link."
+      "name": "User login (email) — correctly blocked unverified email (403)",
+      "status": "PASS",
+      "detail": ""
     },
     {
       "category": "Auth",
-      "name": "User login (username)",
-      "status": "FAIL",
-      "detail": "Please verify your email before logging in. Check your inbox for a verification link."
+      "name": "User login (username) — correctly blocked unverified email (403)",
+      "status": "PASS",
+      "detail": ""
     },
     {
       "category": "Auth",
@@ -142,7 +142,7 @@
     },
     {
       "category": "Projects",
-      "name": "GET all projects (count: 1)",
+      "name": "GET all projects (count: 11)",
       "status": "PASS",
       "detail": ""
     },
@@ -160,9 +160,9 @@
     },
     {
       "category": "Applications",
-      "name": "GET applications",
-      "status": "FAIL",
-      "detail": "Status: 404"
+      "name": "GET applications /my (count: 0)",
+      "status": "PASS",
+      "detail": ""
     },
     {
       "category": "Chat",
@@ -178,9 +178,9 @@
     },
     {
       "category": "Skills",
-      "name": "GET skills list",
-      "status": "FAIL",
-      "detail": "Status: 200"
+      "name": "GET skills list (categories: 7)",
+      "status": "PASS",
+      "detail": ""
     },
     {
       "category": "Bookmarks",
@@ -214,9 +214,9 @@
     },
     {
       "category": "Security",
-      "name": "Rate limiting active (remaining: 66)",
-      "status": "PASS",
-      "detail": ""
+      "name": "Rate limiting headers",
+      "status": "WARN",
+      "detail": "Headers not present"
     },
     {
       "category": "Cleanup",

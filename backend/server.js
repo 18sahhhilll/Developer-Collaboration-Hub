@@ -20,6 +20,7 @@ import { initSocket } from './socket/socketHandler.js';
 import { setSocketIO } from './utils/notificationHelper.js';
 import { ensureTextIndex } from './services/searchService.js';
 import { migrateUsernames } from './scripts/migrateUsernames.js';
+import { autoSeedIfEmpty } from './scripts/seedDatabase.js';
 
 dotenv.config();
 
@@ -27,15 +28,40 @@ dotenv.config();
 connectDB().then(async () => {
   await ensureTextIndex().catch((err) => console.warn('Index setup:', err.message));
   await migrateUsernames(); // Safe to run every startup
+  await autoSeedIfEmpty(); // Auto-seed realistic sample data if DB is empty
 });
 
 const app = express();
 const server = http.createServer(app);
 
+// ── CORS (Must be at top before rate limiters & body parsers) ─────────────────
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'https://developer-collaboration-hub.vercel.app',
+  process.env.CLIENT_URL ? process.env.CLIENT_URL.replace(/\/$/, '') : null,
+].filter(Boolean);
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    const cleanOrigin = origin.replace(/\/$/, '');
+    if (allowedOrigins.includes(cleanOrigin) || process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+    return callback(null, true);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+};
+
+app.use(cors(corsOptions));
+
 // ── Socket.io ─────────────────────────────────────────────────────────────────
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: (origin, callback) => callback(null, true),
     methods: ['GET', 'POST'],
     credentials: true,
   },
@@ -52,35 +78,29 @@ app.use(
   })
 );
 
-// Rate limiting
+// Rate limiting — enabled in production, relaxed in development
+const isProd = process.env.NODE_ENV === 'production';
+
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,
+  max: isProd ? 100 : 1000,
   message: { message: 'Too many requests, please try again later' },
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => !isProd,
 });
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 20, // Stricter limit for auth endpoints
+  max: isProd ? 20 : 500,
   message: { message: 'Too many login attempts, please try again later' },
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => !isProd,
 });
 
 app.use('/api/auth', authLimiter);
 app.use('/api/', apiLimiter);
-
-// ── CORS ──────────────────────────────────────────────────────────────────────
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  })
-);
 
 // ── Body parsing & sanitization ───────────────────────────────────────────────
 app.use(express.json({ limit: '10kb' })); // Limit body size

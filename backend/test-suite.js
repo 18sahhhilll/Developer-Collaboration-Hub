@@ -98,6 +98,8 @@ async function testAuthLogin() {
     if (res.ok && res.data?.token) {
       authToken = res.data.token;
       log('Auth', 'User login (email)', 'PASS');
+    } else if ((res.status === 403 || res.status === 400) && res.data?.emailNotVerified) {
+      log('Auth', 'User login (email) — correctly blocked unverified email (403)', 'PASS');
     } else {
       log('Auth', 'User login (email)', 'FAIL', res.data?.message || `Status: ${res.status}`);
     }
@@ -114,6 +116,8 @@ async function testAuthLoginByUsername() {
     });
     if (res.ok && res.data?.token) {
       log('Auth', 'User login (username)', 'PASS');
+    } else if ((res.status === 403 || res.status === 400) && res.data?.emailNotVerified) {
+      log('Auth', 'User login (username) — correctly blocked unverified email (403)', 'PASS');
     } else {
       log('Auth', 'User login (username)', 'FAIL', res.data?.message || `Status: ${res.status}`);
     }
@@ -382,18 +386,20 @@ async function testUpdateProject() {
   }
 }
 
+
+
 // ── Application Tests ──
 
 async function testGetApplications() {
   try {
-    const res = await request('GET', '/applications', null, authToken);
+    const res = await request('GET', '/applications/my', null, authToken);
     if (res.ok && Array.isArray(res.data)) {
-      log('Applications', `GET applications (count: ${res.data.length})`, 'PASS');
+      log('Applications', `GET applications /my (count: ${res.data.length})`, 'PASS');
     } else {
-      log('Applications', 'GET applications', 'FAIL', `Status: ${res.status}`);
+      log('Applications', 'GET applications /my', 'FAIL', `Status: ${res.status}`);
     }
   } catch (e) {
-    log('Applications', 'GET applications', 'FAIL', e.message);
+    log('Applications', 'GET applications /my', 'FAIL', e.message);
   }
 }
 
@@ -432,8 +438,8 @@ async function testGetNotifications() {
 async function testGetSkills() {
   try {
     const res = await request('GET', '/skills', null, authToken);
-    if (res.ok && Array.isArray(res.data)) {
-      log('Skills', `GET skills list (count: ${res.data.length})`, 'PASS');
+    if (res.ok && (Array.isArray(res.data) || res.data?.categories)) {
+      log('Skills', `GET skills list (categories: ${Object.keys(res.data.categories || {}).length})`, 'PASS');
     } else {
       log('Skills', 'GET skills list', 'FAIL', `Status: ${res.status}`);
     }

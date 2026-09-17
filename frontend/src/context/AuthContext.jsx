@@ -4,12 +4,21 @@ import api from '../services/api';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('user');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
   const [loading, setLoading] = useState(true);
 
   const fetchUser = useCallback(async () => {
     const token = localStorage.getItem('token');
     if (!token) {
+      setUser(null);
+      localStorage.removeItem('user');
       setLoading(false);
       return;
     }
@@ -18,10 +27,15 @@ export const AuthProvider = ({ children }) => {
       const { data } = await api.get('/auth/me');
       setUser(data);
       localStorage.setItem('user', JSON.stringify(data));
-    } catch {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      setUser(null);
+    } catch (err) {
+      // Only wipe session if server explicitly returned 401/403 Invalid Token
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setUser(null);
+      } else {
+        console.warn('Session verification warning:', err.message);
+      }
     } finally {
       setLoading(false);
     }

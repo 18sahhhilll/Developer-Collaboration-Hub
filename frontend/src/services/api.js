@@ -21,7 +21,10 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      if (!window.location.pathname.includes('/login')) {
+      const isAuthPage = ['/login', '/register', '/forgot-password', '/auth/github/callback'].some((path) =>
+        window.location.pathname.startsWith(path)
+      );
+      if (!isAuthPage) {
         window.location.href = '/login';
       }
     }
