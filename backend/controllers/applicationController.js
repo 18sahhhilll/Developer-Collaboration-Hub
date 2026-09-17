@@ -9,6 +9,10 @@ export const applyToProject = async (req, res) => {
     const { projectId } = req.params;
     const { message } = req.body;
 
+    if (!projectId || !mongoose.Types.ObjectId.isValid(projectId)) {
+      return res.status(400).json({ message: 'Invalid or missing project ID' });
+    }
+
     const project = await Project.findById(projectId);
     if (!project) {
       return res.status(404).json({ message: 'Project not found' });

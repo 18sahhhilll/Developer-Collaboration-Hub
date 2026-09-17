@@ -74,6 +74,7 @@ initSocket(io);
 app.use(
   helmet({
     crossOriginEmbedderPolicy: false,
+    crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' },
     contentSecurityPolicy: false, // Disable CSP to avoid breaking React app in dev
   })
 );

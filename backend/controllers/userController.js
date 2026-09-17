@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import User from '../models/User.js';
 import Project from '../models/Project.js';
 import Application from '../models/Application.js';
@@ -257,9 +258,20 @@ export const getProfileProjects = async (req, res) => {
 
 export const toggleBookmark = async (req, res) => {
   try {
+    const { projectId } = req.params;
+    if (!projectId || !mongoose.Types.ObjectId.isValid(projectId)) {
+      return res.status(400).json({ message: 'Invalid or missing project ID' });
+    }
+
+    const project = await Project.findById(projectId);
+    if (!project) {
+      return res.status(404).json({ message: 'Project not found' });
+    }
+
     const user = await User.findById(req.user._id);
-    const projectId = req.params.projectId;
-    const index = user.bookmarks.indexOf(projectId);
+    const index = user.bookmarks.findIndex(
+      (b) => (b._id || b).toString() === projectId.toString()
+    );
 
     if (index > -1) {
       user.bookmarks.splice(index, 1);

@@ -83,17 +83,18 @@ const Feed = () => {
   }, [fetchFeed]);
 
   const handleApply = async () => {
-    if (!applyModal) return;
-    setApplying(applyModal);
+    const idStr = String(applyModal?._id || applyModal || '');
+    if (!idStr || !/^[a-f\d]{24}$/i.test(idStr)) return;
+    setApplying(idStr);
     try {
-      await api.post(`/applications/${applyModal}`, { message: applyMessage });
-      setAppliedIds((prev) => new Set([...prev, String(applyModal)]));
+      await api.post(`/applications/${idStr}`, { message: applyMessage });
+      setAppliedIds((prev) => new Set([...prev, idStr]));
       setApplyModal(null);
       setApplyMessage('');
     } catch (err) {
       const msg = err.response?.data?.message || '';
       if (msg.includes('already applied')) {
-        setAppliedIds((prev) => new Set([...prev, String(applyModal)]));
+        setAppliedIds((prev) => new Set([...prev, idStr]));
         setApplyModal(null);
         setApplyMessage('');
       } else {
@@ -105,8 +106,10 @@ const Feed = () => {
   };
 
   const handleBookmark = async (projectId) => {
+    const idStr = String(projectId?._id || projectId || '');
+    if (!idStr || !/^[a-f\d]{24}$/i.test(idStr)) return;
     try {
-      const { data } = await api.post(`/users/bookmarks/${projectId}`);
+      const { data } = await api.post(`/users/bookmarks/${idStr}`);
       setBookmarks(new Set((data.bookmarks || []).map((id) => String(id._id || id))));
     } catch {
       /* ignore */
@@ -114,14 +117,16 @@ const Feed = () => {
   };
 
   const handleWithdraw = async (projectId) => {
+    const idStr = String(projectId?._id || projectId || '');
+    if (!idStr || !/^[a-f\d]{24}$/i.test(idStr)) return;
     try {
-      await api.delete(`/applications/${projectId}`);
+      await api.delete(`/applications/${idStr}`);
     } catch (err) {
-      console.warn('Withdraw warning:', err);
+      console.warn('Withdraw notice:', err);
     } finally {
       setAppliedIds((prev) => {
         const next = new Set(prev);
-        next.delete(String(projectId));
+        next.delete(idStr);
         return next;
       });
     }
