@@ -55,13 +55,17 @@ const Feed = () => {
       ]);
 
       setProjects(projectsRes.data);
-      setAppliedIds(new Set(appsRes.data.map((a) => a.projectId?._id || a.projectId)));
-      setBookmarks(new Set(bookmarksRes.data.map((b) => b._id)));
+      setAppliedIds(
+        new Set(
+          appsRes.data.map((a) => String(a.projectId?._id || a.projectId || ''))
+        )
+      );
+      setBookmarks(new Set(bookmarksRes.data.map((b) => String(b._id || b))));
       setOwnedIds(
         new Set(
           myProjectsRes.data
-            .filter((p) => (p.createdBy?._id || p.createdBy)?.toString() === user?._id?.toString())
-            .map((p) => p._id)
+            .filter((p) => String(p.createdBy?._id || p.createdBy || '') === String(user?._id || ''))
+            .map((p) => String(p._id))
         )
       );
     } catch (err) {
@@ -80,7 +84,7 @@ const Feed = () => {
     setApplying(applyModal);
     try {
       await api.post(`/applications/${applyModal}`, { message: applyMessage });
-      setAppliedIds((prev) => new Set([...prev, applyModal]));
+      setAppliedIds((prev) => new Set([...prev, String(applyModal)]));
       setApplyModal(null);
       setApplyMessage('');
     } catch (err) {
@@ -93,7 +97,7 @@ const Feed = () => {
   const handleBookmark = async (projectId) => {
     try {
       const { data } = await api.post(`/users/bookmarks/${projectId}`);
-      setBookmarks(new Set(data.bookmarks));
+      setBookmarks(new Set((data.bookmarks || []).map((id) => String(id._id || id))));
     } catch {
       /* ignore */
     }
@@ -162,10 +166,10 @@ const Feed = () => {
               project={project}
               onApply={(id) => setApplyModal(id)}
               applying={applying === project._id}
-              applied={appliedIds.has(project._id)}
-              isOwner={ownedIds.has(project._id)}
+              applied={appliedIds.has(String(project._id))}
+              isOwner={ownedIds.has(String(project._id))}
               showBookmark
-              bookmarked={bookmarks.has(project._id)}
+              bookmarked={bookmarks.has(String(project._id))}
               onBookmark={handleBookmark}
               recommendationReason={project.recommendationReason}
             />
