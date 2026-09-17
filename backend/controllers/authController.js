@@ -72,7 +72,7 @@ export const registerUser = async (req, res) => {
       username: username.toLowerCase(),
       password: hashedPassword,
       authProvider: 'local',
-      emailVerified: false,
+      emailVerified: true,
       emailVerificationToken: verificationToken,
       emailVerificationExpires: verificationExpires,
     });
@@ -84,7 +84,7 @@ export const registerUser = async (req, res) => {
 
     res.status(201).json({
       ...issueAuthResponse(user),
-      message: 'Account created! Please verify your email before logging in.',
+      message: 'Account created successfully!',
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -124,13 +124,10 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Block login if email not verified (local accounts only)
+    // Auto-verify legacy/unverified accounts upon successful password match
     if (!user.emailVerified) {
-      return res.status(403).json({
-        message: 'Please verify your email before logging in. Check your inbox for a verification link.',
-        emailNotVerified: true,
-        email: user.email,
-      });
+      user.emailVerified = true;
+      await user.save();
     }
 
     res.json(issueAuthResponse(user));
