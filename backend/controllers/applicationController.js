@@ -13,11 +13,14 @@ export const applyToProject = async (req, res) => {
       return res.status(404).json({ message: 'Project not found' });
     }
 
-    if (project.createdBy.toString() === req.user._id.toString()) {
+    const ownerId = (project.createdBy?._id || project.createdBy).toString();
+    const userId = req.user._id.toString();
+
+    if (ownerId === userId) {
       return res.status(400).json({ message: 'Project owners cannot apply to their own project' });
     }
 
-    if (project.members.some((m) => m.toString() === req.user._id.toString())) {
+    if (project.members.some((m) => (m._id || m).toString() === userId)) {
       return res.status(400).json({ message: 'You are already a team member' });
     }
 
@@ -35,6 +38,26 @@ export const applyToProject = async (req, res) => {
     });
 
     if (existing) {
+      if (existing.status === 'rejected') {
+        existing.status = 'pending';
+        existing.message = message || '';
+        await existing.save();
+
+        await createNotification({
+          userId: project.createdBy,
+          type: NOTIFICATION_TYPES.APPLICATION_RECEIVED,
+          title: 'New Application',
+          message: `${req.user.name} re-applied to "${project.title}"`,
+          relatedId: existing._id,
+          projectId: project._id,
+        });
+
+        const populated = await Application.findById(existing._id)
+          .populate('userId', 'name email role skills')
+          .populate('projectId', 'title');
+
+        return res.status(200).json(populated);
+      }
       return res.status(400).json({ message: 'You have already applied to this project' });
     }
 

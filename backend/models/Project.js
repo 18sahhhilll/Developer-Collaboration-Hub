@@ -50,11 +50,11 @@ projectSchema.pre('save', function (next) {
 
   if (this.isNew || this.isModified('members') || this.isModified('createdBy')) {
     const roles = [];
-    const ownerId = this.createdBy?.toString();
+    const ownerId = (this.createdBy?._id || this.createdBy)?.toString();
     (this.members || []).forEach((memberId) => {
-      const id = memberId.toString();
+      const id = (memberId._id || memberId).toString();
       roles.push({
-        user: memberId,
+        user: memberId._id || memberId,
         role: id === ownerId ? 'owner' : 'member',
       });
     });

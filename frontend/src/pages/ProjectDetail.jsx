@@ -75,7 +75,13 @@ const ProjectDetail = () => {
       setApplied(true);
       setApplyModal(false);
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to apply');
+      const msg = err.response?.data?.message || '';
+      if (msg.includes('already applied')) {
+        setApplied(true);
+        setApplyModal(false);
+      } else {
+        alert(msg || 'Failed to apply');
+      }
     } finally {
       setApplying(false);
     }

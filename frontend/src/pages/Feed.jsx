@@ -88,7 +88,14 @@ const Feed = () => {
       setApplyModal(null);
       setApplyMessage('');
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to apply');
+      const msg = err.response?.data?.message || '';
+      if (msg.includes('already applied')) {
+        setAppliedIds((prev) => new Set([...prev, String(applyModal)]));
+        setApplyModal(null);
+        setApplyMessage('');
+      } else {
+        alert(msg || 'Failed to apply');
+      }
     } finally {
       setApplying(null);
     }
