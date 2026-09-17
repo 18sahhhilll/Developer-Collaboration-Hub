@@ -22,14 +22,14 @@ const ProjectDetail = () => {
   const [transferModal, setTransferModal] = useState(false);
   const [transferTarget, setTransferTarget] = useState('');
 
-  const isOwner = project?.createdBy?._id === user?._id || project?.createdBy === user?._id;
-  const isMember = project?.members?.some((m) => (m._id || m) === user?._id);
-  const isRecruiting = project?.status === 'recruiting' || project?.status === 'open';
+  const isOwner = String(project?.createdBy?._id || project?.createdBy || '') === String(user?._id || '');
+  const isMember = project?.members?.some((m) => String(m._id || m) === String(user?._id || ''));
+  const isRecruiting = project?.status === 'recruiting' || project?.status === 'open' || project?.status === 'in-progress';
 
   const refreshProject = async () => {
     const { data } = await api.get(`/projects/${id}`);
     setProject(data);
-    if (data.createdBy?._id === user?._id || data.createdBy === user?._id) {
+    if (String(data.createdBy?._id || data.createdBy) === String(user?._id)) {
       const apps = await api.get(`/applications/project/${id}`);
       setApplications(apps.data);
     }
@@ -43,7 +43,7 @@ const ProjectDetail = () => {
           api.get('/applications/my'),
         ]);
         setProject(projectRes.data);
-        setApplied(myAppsRes.data.some((a) => (a.projectId?._id || a.projectId) === id));
+        setApplied(myAppsRes.data.some((a) => String(a.projectId?._id || a.projectId) === String(id)));
 
         const ownerId = projectRes.data.createdBy?._id || projectRes.data.createdBy;
         if (ownerId === user?._id) {

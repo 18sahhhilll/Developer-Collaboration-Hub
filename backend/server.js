@@ -78,25 +78,23 @@ app.use(
   })
 );
 
-// Rate limiting — enabled in production, relaxed in development
+// Rate limiting — generous thresholds to allow active app usage without 429 errors
 const isProd = process.env.NODE_ENV === 'production';
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: isProd ? 100 : 1000,
+  max: isProd ? 3000 : 10000, // Generous limit: allows 750+ page transitions per 15 min
   message: { message: 'Too many requests, please try again later' },
   standardHeaders: true,
   legacyHeaders: false,
-  skip: () => !isProd,
 });
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: isProd ? 20 : 500,
+  max: isProd ? 300 : 1000,
   message: { message: 'Too many login attempts, please try again later' },
   standardHeaders: true,
   legacyHeaders: false,
-  skip: () => !isProd,
 });
 
 app.use('/api/auth', authLimiter);

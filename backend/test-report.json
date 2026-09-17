@@ -1,10 +1,10 @@
 {
-  "timestamp": "2026-09-17T08:01:56.703Z",
+  "timestamp": "2026-09-17T08:11:11.006Z",
   "summary": {
     "total": 36,
-    "passed": 35,
+    "passed": 36,
     "failed": 0,
-    "warned": 1,
+    "warned": 0,
     "skipped": 0
   },
   "results": [
@@ -214,9 +214,9 @@
     },
     {
       "category": "Security",
-      "name": "Rate limiting headers",
-      "status": "WARN",
-      "detail": "Headers not present"
+      "name": "Rate limiting active (remaining: 9969)",
+      "status": "PASS",
+      "detail": ""
     },
     {
       "category": "Cleanup",
