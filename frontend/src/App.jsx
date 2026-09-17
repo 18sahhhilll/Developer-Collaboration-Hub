@@ -5,6 +5,8 @@ import LoadingSpinner from './components/LoadingSpinner';
 
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
+import GitHubCallback from './pages/GitHubCallback';
 import Onboarding from './pages/Onboarding';
 import Feed from './pages/Feed';
 import Dashboard from './pages/Dashboard';
@@ -63,6 +65,16 @@ function App() {
           </PublicRoute>
         }
       />
+      <Route
+        path="/forgot-password"
+        element={
+          <PublicRoute>
+            <ForgotPassword />
+          </PublicRoute>
+        }
+      />
+      {/* GitHub OAuth callback — handles its own auth, not wrapped in PublicRoute */}
+      <Route path="/auth/github/callback" element={<GitHubCallback />} />
       <Route path="/onboarding" element={<OnboardingRoute />} />
 
       <Route element={<ProtectedRoute />}>
