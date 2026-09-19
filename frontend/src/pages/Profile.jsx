@@ -18,6 +18,7 @@ import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import SkillTags from '../components/SkillTags';
 import SkillAutocomplete from '../components/SkillAutocomplete';
+import RoleAutocomplete from '../components/RoleAutocomplete';
 import StatusBadge from '../components/StatusBadge';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ProfileBadges from '../components/ProfileBadges';
@@ -230,7 +231,7 @@ const Profile = () => {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <label className="mb-1 block text-sm font-medium">Role</label>
-                    <input name="role" value={form.role} onChange={handleChange} className="input-field" />
+                    <RoleAutocomplete value={form.role} onChange={(role) => setForm((p) => ({ ...p, role }))} />
                   </div>
                   <div>
                     <label className="mb-1 block text-sm font-medium">Experience</label>

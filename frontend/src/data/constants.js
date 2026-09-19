@@ -33,4 +33,24 @@ export const TEAM_SIZE_OPTIONS = [
   { value: '10', label: 'Large (6+)' },
 ];
 
-export default { SKILL_CATEGORIES, ALL_SKILLS, QUICK_TECH_CHIPS, PROJECT_STATUSES, TEAM_SIZE_OPTIONS };
+export const DEVELOPER_ROLES = [
+  'Full Stack Developer',
+  'Frontend Developer',
+  'Backend Developer',
+  'Mobile Developer',
+  'UI/UX Designer',
+  'AI/ML Engineer',
+  'Data Scientist',
+  'DevOps Engineer',
+  'Cloud Engineer',
+  'Software Engineer',
+  'Game Developer',
+  'QA / Test Engineer',
+  'Security Engineer',
+  'Blockchain Developer',
+  'Product Manager',
+  'Systems Engineer',
+  'Technical Writer',
+];
+
+export default { SKILL_CATEGORIES, ALL_SKILLS, QUICK_TECH_CHIPS, PROJECT_STATUSES, TEAM_SIZE_OPTIONS, DEVELOPER_ROLES };
