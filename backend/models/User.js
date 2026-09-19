@@ -89,6 +89,8 @@ const userSchema = new mongoose.Schema(
       followers: { type: Number, default: 0 },
       following: { type: Number, default: 0 },
       languages: [{ name: String, count: Number }],
+      cachedProfile: { type: Object },
+      cachedRepos: { type: Array },
       lastSynced: { type: Date },
     },
 

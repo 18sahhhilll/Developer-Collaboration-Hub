@@ -16,9 +16,16 @@ export const getGithubData = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const username =
-      user.githubUsername ||
-      user.socialLinks?.github?.replace(/https?:\/\/(www\.)?github\.com\//i, '').replace(/\/$/, '');
+    let username = (user.githubUsername || '').trim();
+    if (!username && user.socialLinks?.github) {
+      const cleanUrl = user.socialLinks.github.trim();
+      const match = cleanUrl.match(/github\.com\/([^\/\?#]+)/i);
+      if (match && match[1]) {
+        username = match[1];
+      } else if (!cleanUrl.startsWith('http')) {
+        username = cleanUrl;
+      }
+    }
 
     if (!username) {
       return res.status(400).json({ message: 'GitHub username not configured' });
@@ -26,10 +33,24 @@ export const getGithubData = async (req, res) => {
 
     const headers = getGithubHeaders();
 
-    const [userRes, reposRes] = await Promise.all([
-      axios.get(`https://api.github.com/users/${username}`, { headers }),
-      axios.get(`https://api.github.com/users/${username}/repos?sort=updated&per_page=8`, { headers }),
-    ]);
+    let userRes, reposRes;
+    try {
+      [userRes, reposRes] = await Promise.all([
+        axios.get(`https://api.github.com/users/${username}`, { headers }),
+        axios.get(`https://api.github.com/users/${username}/repos?sort=updated&per_page=8`, { headers }),
+      ]);
+    } catch (apiError) {
+      // If GitHub API rate limits or errors, fall back to cached data if available
+      if (user.githubData?.cachedProfile && user.githubData?.cachedRepos) {
+        return res.json({
+          profile: user.githubData.cachedProfile,
+          repos: user.githubData.cachedRepos,
+          languages: user.githubData.languages || [],
+          isCached: true,
+        });
+      }
+      throw apiError;
+    }
 
     const repos = reposRes.data.map((repo) => ({
       id: repo.id,
@@ -51,31 +72,34 @@ export const getGithubData = async (req, res) => {
     }
     const languageList = Object.entries(languages).map(([name, count]) => ({ name, count }));
 
-    // Cache github data on user document
+    const profileData = {
+      username: userRes.data.login,
+      avatar: userRes.data.avatar_url,
+      bio: userRes.data.bio,
+      name: userRes.data.name,
+      publicRepos: userRes.data.public_repos,
+      followers: userRes.data.followers,
+      following: userRes.data.following,
+      url: userRes.data.html_url,
+      isConnectedViaOAuth: !!user.githubId,
+    };
+
+    // Cache github data on user document asynchronously
     const githubDataCache = {
       bio: userRes.data.bio || '',
       publicRepos: userRes.data.public_repos,
       followers: userRes.data.followers,
       following: userRes.data.following,
       languages: languageList,
+      cachedProfile: profileData,
+      cachedRepos: repos,
       lastSynced: new Date(),
     };
 
-    // Update user document asynchronously
     User.findByIdAndUpdate(user._id, { githubData: githubDataCache }).catch(() => {});
 
     res.json({
-      profile: {
-        username: userRes.data.login,
-        avatar: userRes.data.avatar_url,
-        bio: userRes.data.bio,
-        name: userRes.data.name,
-        publicRepos: userRes.data.public_repos,
-        followers: userRes.data.followers,
-        following: userRes.data.following,
-        url: userRes.data.html_url,
-        isConnectedViaOAuth: !!user.githubId, // shows "Verified GitHub" badge
-      },
+      profile: profileData,
       repos,
       languages: languageList,
     });
